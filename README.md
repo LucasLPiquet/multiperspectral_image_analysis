@@ -17,6 +17,7 @@ It uses the CIE 1931 colour-matching functions to recreate a RGB image.
 After that, we can use the RGB image to group the regions with similar colour. To accomplish this, we used k-means clustering (I will, eventually, try other clusterings algorithms), and trained the clustering in two ways: 
 - The first one was to train it to find each cluster center in an colourful image
 - The second one was training it on the RGB image that we are analysing.
+
 The intuitition behing the first method was to have the clustering to learn how to distinguish between the colours, and group it. Since we know which cluster is associated with each colour, the result is pretty interpretable. However, given that many images, mainly documents, aren't really that colourful, most of the clusters are sparse, and, sometimes, separate pixels that are similar, while grouping pixels taht are visually different.
 The intuition behind the second method is to have a clustering algorithm that is adapted to the image we wish to group, in order to have a more representative grouping. Despite that, the groupings are less interpretable, because the clusterings rely completly on the image we are analysing, and doesn't have a direct connection with each color.
 We're still analysing which direction to go.
