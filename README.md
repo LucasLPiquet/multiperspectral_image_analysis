@@ -12,6 +12,7 @@ To do so, we have access to 16 hyperspectral sub-images of the image (document/a
 The idea, initially, is to group the image according to the visual colouring, so that we can divide the main problem into a simpler one: divide the pixels of one specific color, according to the hyperspectral images.
 We don't have access to the original RGB image, so we need to build it using the informations in each of the 16 frequencies sub-images. To do so, we took a look at the source of the MISHA capturing software, which has implemented exactly what we need.
 It uses the CIE 1931 colour-matching functions to recreate a RGB image.
+I tried using other methods for creating the RGB image, for example, I tried searching for which frequencies were the ones responsible for the red, green and blue, but the image wasn't as saturated and as bright. The other idea was to use linear regression to find out the weights of each frequency, but, again, despite being significantly better than the last idea, it was still not as satisfactory as the one using the CIE functions.
 
 ## Grouping the pixels visually
 After that, we can use the RGB image to group the regions with similar colour. To accomplish this, we used k-means clustering (I will, eventually, try other clusterings algorithms), and trained the clustering in two ways: 
