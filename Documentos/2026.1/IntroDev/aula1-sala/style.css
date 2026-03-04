@@ -1,0 +1,125 @@
+body{
+    background-color: rgb(18, 9, 32);
+    background-image: url(night-sky-with-stars_1048-7871.avif)
+}
+.imagem{
+    padding-bottom: 10px;
+    background-color: white;
+}
+@media (max-width: 500px){
+    #usplogo{
+        display: inline;
+        width:20vw;
+        padding-bottom: 10px;
+    }
+}
+@media (min-width: 500px){
+    #usplogo{
+        display: inline;
+        width:10vw;
+        padding-bottom: 10px;
+    }
+}
+#usptexto{
+    display: none;
+}
+@media (min-width: 500px){
+    #usptexto{
+        display: inline;
+        width:30vw;
+        padding-bottom: 5px;
+    }
+}
+#kkkkkkk{
+    width: 100vw;
+    height: 6px;
+    background-color: orange;
+}
+#azulclaro{
+    width: 100vw;
+    height: 6px;
+    background-color:rgb(0, 255, 221);
+}
+#azul{
+    width: 100vw;
+    height: 12px;
+    background-color:rgb(0, 173, 179);
+}
+.titulo{
+    margin-top: 10px;
+    display: flex;/* p poder mudar e ficar lindo */
+    flex-direction: column; /* td no body fica em colunas*/
+    justify-content: center; /* td fica no centro da página*/
+    align-items: center; /* alinha verticalmente*/
+    color: rgba(238, 127, 75, 0.945);
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+.login{
+    
+}
+.caixa{
+    display: flex;/* p poder mudar e ficar lindo */
+    flex-direction: column; /* td no body fica em colunas*/
+    justify-content: center; /* td fica no centro da página*/
+    align-items: center; /* alinha verticalmente*/
+
+}
+.divzona{
+    display: flex;
+    flex-direction: row-reverse;
+}
+.navegador{
+    border: 1px solid rgb(255, 255, 255);
+    width: 200px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: rgb(255, 255, 255);
+    padding: 5px;
+    margin-top: 80px;
+}
+.bloco1{
+    display: flex;
+    flex-direction: column;
+    color: rgb(255, 255, 255);
+}
+.MAC0350{
+    display: flex;
+    flex-direction: column;
+    color: rgb(255, 255, 255);
+}
+form {
+    border-radius: 100%;
+    width: 200px;
+    height: 200px;
+    display: flex;/* p poder mudar e ficar lindo */
+    flex-direction: column; /* td no body fica em colunas*/
+    justify-content: center; /* td fica no centro da página*/
+    align-items: center; /* alinha verticalmente*/
+    padding: 20px;
+    background-image: url('jupiter.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+a:link {
+  color: rgb(255, 255, 255);
+}
+
+a:visited {
+  color: rgb(247, 180, 136);
+}
+
+a:hover {
+  color: rgb(255, 102, 0);
+}
+.login{
+ flex-grow: 1;
+}
+.footer{
+    border-top: 320px solid transparent;
+    display: flex;/* p poder mudar e ficar lindo */
+    flex-direction: column; /* td no body fica em colunas*/
+    justify-content: center; /* td fica no centro da página*/
+    align-items: center; /* alinha verticalmente*/
+    color: rgb(255, 255, 255);
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
