@@ -37,3 +37,13 @@ I've tried a number of clustering algorithms in order to choose the one with the
 After testing each algorithm in different images, I've realized that GMM was the one with the best performance in general. However, none of the results actually dealt well with the parts of the document that were just plain paper. Given the dating of the documents, they had many stains, which where often confused as paint. Also, having a low number of clusters made the clusters to diverse, and increasing the number of clusters often separated more the paper than the actual colors of the paints (again, because of the stains).
 
 So right now, I've decided to work on separating paper and paint, in order to only apply the clustering algorithm on the actual paint, and not the paper.
+
+# Updates (04/29/26)
+## Separating paint and paper
+To separate what's actual paint to the paper of the documents, the algorithm that performed best was the GMM, but K-means was almost just as good. The fact that GMM is stochastic helps it dealing with paper imperfections. The most reliable one, however, was the logistic regression, which enables the user to manually select pixels as paper, making the separation more controlled and acurate. In spite of that, the fact that it relies on user's handpicking makes it unpleasent to work with, that's why I've decided to stick with the GMM.
+
+## Clustering the paint into colors
+After trying again all of the algorithms, I've decided to try a new approach on the HDBSCAN: instead of using it directly on the image of the paint, I've used a superpixel algorithm first in order to apply the HDBSCAN in the superpixeled image, which made it considerably faster, and had a surprisingly good result.
+After testing this pipeline in a number of documents, it was clear that it usually performs really well. Despite that, I've had trouble dealing with documents that had colorfull and small details, because the superpixel groups it, making it seem as a noise to the HDBSCAN, so I'm currently trying to mess with the hyperparameters in order to make it perform better. Either way, I guess it won't be possible to automatize the pipeline for every document, it seems that the hyperparameters have to be manually selected in order to create a good output.
+
+The next step of my research, after succesfully testing the clustering pipeline in many other documents, is to see how it behaves with paintings.
