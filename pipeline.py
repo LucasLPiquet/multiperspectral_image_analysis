@@ -732,29 +732,25 @@ def threshold_L_croma(lab, T_L=None, p_croma=98):
     return mask.astype(np.uint8)
 
 threshold = True
-image_paths=[
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-365.tif",
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-385.tif",
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-395.tif",
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-420.tif",
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-450.tif",
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-470.tif",
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-500.tif",
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-530.tif",
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-560.tif",
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-590.tif",
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-615.tif",
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-630.tif",
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-660.tif",
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-730.tif",
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-850.tif",
-    "imagens12/Antifonario_-_pag_246_verso_DataCube-940.tif"
-]
+# --- Dados: ajuste estes valores para cada página --------------------------
+# Os TIFFs das 16 bandas devem estar em DATA_DIR com o nome
+# "<PAGE>_DataCube-<comprimento de onda>.tif". O dataset NÃO faz parte do repositório
+# (ver README); a pasta images/ traz apenas uma página de exemplo.
+DATA_DIR = "imagens12"
+PAGE = "Antifonario_-_pag_246_verso"
+WAVELENGTHS = [365, 385, 395, 420, 450, 470, 500, 530, 560, 590, 615, 630, 660, 730, 850, 940]
+image_paths = [f"{DATA_DIR}/{PAGE}_DataCube-{w}.tif" for w in WAVELENGTHS]
+
+# Específicos de cada página/aquisição: posição do spectralon ((x1, y1), (x2, y2))
+# e área recortada (left, top, right, bottom) da imagem.
+# Os valores abaixo são os da página 246 verso; confira-os antes de usar outra página.
+SPECTRALON_COORDS = ((20, 1357), (150, 1511))
+CROP_BOX = (0, 400, 5467, 3643)
 
 T_TINTA = 72    #era 72, depois foi 67
 PUREZA_MIN = 0.95
 N_SEGMENTS = 20000
-CACHE = f"cache_T{T_TINTA}_pureza{PUREZA_MIN}_seg{N_SEGMENTS}.npz"
+CACHE = f"cache_{PAGE}_T{T_TINTA}_pureza{PUREZA_MIN}_seg{N_SEGMENTS}.npz"
 
 if os.path.exists(CACHE):
     d = np.load(CACHE)
@@ -785,13 +781,12 @@ else:
 
 
     #colore    
-    spectralon_coords = ((20, 1357), (150, 1511))
     sd = colour.MSDS_CMFS['CIE 1931 2 Degree Standard Observer']
     print(sd.shape)
-    rgb_array, xyz_array = generate_true_color_image(X, [365, 385, 395, 420, 450, 470, 500, 530, 560, 590, 615, 630, 660, 730, 850, 940], spectralon_coords)
+    rgb_array, xyz_array = generate_true_color_image(X, WAVELENGTHS, SPECTRALON_COORDS)
     rgb_image =  Image.fromarray(rgb_array)
     rgb_image.save("colorido.png")
-    imagecropped = rgb_image.crop((0, 400, 5467, 3643))
+    imagecropped = rgb_image.crop(CROP_BOX)
     imagecropped.save("cropped.png")
 
     # #separa papel
@@ -808,7 +803,8 @@ else:
     # no spectralon:
     print(lab[1304:1559, 2:183, 0].mean())
 
-    lab = lab[400:3643, 0:5467]
+    left, top, right, bottom = CROP_BOX
+    lab = lab[top:bottom, left:right]
 
 
 

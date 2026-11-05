@@ -82,7 +82,14 @@ The baselines use, for each image, the number of clusters found by the full pipe
 pip install -r requirements.txt
 python pipeline.py
 ```
-`pipeline.py` is a script, not a library: paths, spectralon coordinates, crop box and thresholds are defined at the top and in the middle of the file and must be adapted to each page. The 16 band images are expected as `imagens12/<name>-<wavelength>.tif`; the files in `images/` follow the same naming. Intermediate results are cached in an `.npz` file, which is ignored by git.
+`pipeline.py` is a script, not a library. Before running it, set in the "Dados" block (before the thresholds):
+- `DATA_DIR` and `PAGE`: the band images are read from `<DATA_DIR>/<PAGE>_DataCube-<wavelength>.tif`. For the sample page in `images/`, that is `DATA_DIR = "images"` and `PAGE = "Antifonario_-_pag_1_frente"`.
+- `SPECTRALON_COORDS` and `CROP_BOX`: where the spectralon is and which area of the image to keep. The defaults are those of page 246 verso, so they must be checked for any other page.
+
+Intermediate results are cached in an `.npz` file (its name includes `PAGE`), which is ignored by git.
+
+## Data
+The manuscript images are **not** distributed with this repository, except for the single sample page in `images/`. They belong to the *Antiphonarium Diurnum* of the Biblioteca de Obras Raras "Fausto Castilho" (Unicamp) and were acquired with the MISHA system by the LACAPC (Instituto de Física, USP). Contact them for access to the full dataset.
 
 ## Next steps
 - Close the loop with the spectral data: check whether groups that look equivalent in the visible range separate when using the full set of 16 bands.
