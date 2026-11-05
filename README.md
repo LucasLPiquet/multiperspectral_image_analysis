@@ -3,6 +3,12 @@
 ## Description
 Repository created with the purpose of testing and exploring multiperspectral images in order to compare the differences between what the eyes can perceive and what is actually shown in other, invisible, frequencies.
 
+## Repository contents
+- `pipeline.py`: current color-segmentation pipeline (16-band cube → CIELAB → ink/paper separation → superpixels → HDBSCAN with CIEDE2000 → statistical refinement). See the update of 11/05/26 below.
+- `cluster.ipynb`: early prototype (K-means / HDBSCAN directly on the RGB image). Kept for history; superseded by `pipeline.py`.
+- `images/`: sample data (one RGB image and the 16 band images of an antiphonary page).
+- `requirements.txt`: Python dependencies for `pipeline.py`.
+
 ## Objective
 The research has already begun, so I'm going to update what has been already done, and what I'm still working at.
 The initial problem to be solved was to help the Physics Institute in USP to lessen the amount of time and effort they need to put into taking samples of regions in a specific art piece or document to analyse the chemycal components to it.
@@ -47,3 +53,38 @@ After trying again all of the algorithms, I've decided to try a new approach on 
 After testing this pipeline in a number of documents, it was clear that it usually performs really well. Despite that, I've had trouble dealing with documents that had colorfull and small details, because the superpixel groups it, making it seem as a noise to the HDBSCAN, so I'm currently trying to mess with the hyperparameters in order to make it perform better. Either way, I guess it won't be possible to automatize the pipeline for every document, it seems that the hyperparameters have to be manually selected in order to create a good output.
 
 The next step of my research, after succesfully testing the clustering pipeline in many other documents, is to see how it behaves with paintings.
+
+# Updates (11/05/26)
+The pipeline is now stable enough to be described in a paper (*Unsupervised Color Clustering of Historical Manuscript Images to Guide Spectroscopic Sampling*, L. L. Piquet and N. S. T. Hirata, submitted to SIBGRAPI 2026, WUW track). The code in `pipeline.py` implements it. Several choices from the previous updates changed, so this section is the reference for the current state.
+
+## Pipeline
+1. **16 bands → CIELAB.** The bands (365–940 nm) are integrated against the CIE 1931 2° observer under D65 (adapted from the MISHA reference implementation). The resulting XYZ is normalized to the D65 white by a per-channel scaling relative to the spectralon patch (von Kries-like, applied directly in XYZ), and then converted straight to CIELAB, without passing through sRGB, to avoid gamut clipping on saturated pigments.
+2. **Ink/paper separation.** This replaces the GMM used in the previous update. A pixel is ink if `L* < 72` (absolute threshold) **or** its chroma is above the 95th percentile of the image. The `L*` threshold may need to be lowered for darker images. Logistic regression on hand-picked pixels remains an option for manuscripts with darkened paper and light ink.
+3. **Superpixels.** 20,000 SLIC superpixels over the ink pixels; each one is represented by its mean CIELAB. Superpixels with high color variance (mostly borders between regions) are set aside.
+4. **Clustering.** HDBSCAN over a precomputed **CIEDE2000** distance matrix (`min_cluster_size=40`, `min_samples=7`, `cluster_selection_epsilon=1`, `eom`). Using CIEDE2000 instead of Euclidean distance in Lab fixed the failure to separate shades of blue.
+5. **Statistical refinement.** HDBSCAN tends to merge colors that blend gradually. Each cluster whose 98th-percentile pairwise ΔE00 is above 18 gets two split candidates (agglomerative and spectral clustering); each candidate is validated with Hartigan's dip test on a CIEDE2000 projection (`alpha = 1e-5`), and if both pass, the one with the better separation score (inter-centroid ΔE00 over mean intra-cluster ΔE00) is used. Minimum subgroup size is 30 superpixels.
+6. **Discarded superpixels.** Those set aside in step 3 are assigned to the closest cluster in CIEDE2000, unless the distance is above 20 (treated as outliers).
+
+## Results (7 manually annotated images)
+| Method | K avg | Purity | Merged classes |
+|---|---|---|---|
+| K-means | 7.1 | 0.969 | 0.176 |
+| Gaussian mixture | 7.1 | 0.966 | 0.186 |
+| Median cut | 7.1 | 0.879 | 0.262 |
+| HDBSCAN | 4.1 | 0.986 | 0.407 |
+| HDBSCAN + refinement | 7.1 | 0.969 | 0.121 |
+| HDBSCAN + refinement + discarded superpixels | 7.1 | 0.955 | 0.121 |
+
+The baselines use, for each image, the number of clusters found by the full pipeline. The merge rate is the metric that matters most here: the refinement lowers it to about 69% of the second best method (K-means), with less than 2% loss in purity (before reassigning discarded superpixels). The evaluation is still small (seven images) and the ground truth is a manual annotation of unambiguous regions.
+
+## Running
+```
+pip install -r requirements.txt
+python pipeline.py
+```
+`pipeline.py` is a script, not a library: paths, spectralon coordinates, crop box and thresholds are defined at the top and in the middle of the file and must be adapted to each page. The 16 band images are expected as `imagens12/<name>-<wavelength>.tif`; the files in `images/` follow the same naming. Intermediate results are cached in an `.npz` file, which is ignored by git.
+
+## Next steps
+- Close the loop with the spectral data: check whether groups that look equivalent in the visible range separate when using the full set of 16 bands.
+- Validate the selected points against real Raman/XRF measurements, to see if the pipeline actually reduces the number of acquisitions an expert needs.
+- Test on more pages, and on paintings.

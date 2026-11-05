@@ -1,0 +1,11 @@
+numpy
+pandas
+scipy
+scikit-learn>=1.3
+scikit-image
+matplotlib
+Pillow
+colour-science
+diptest
+# imported at the top of pipeline.py but not used by the pipeline itself
+PyQt5
