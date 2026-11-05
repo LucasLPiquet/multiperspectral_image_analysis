@@ -1,0 +1,16 @@
+# pipeline cache and generated outputs
+cache_*.npz
+colorido.png
+cropped.png
+tinta.png
+limpo_*.png
+lab_corrigido_viz.png
+superpixels_viz.png
+distribuicao_features.png
+histograma_distancias.png
+bimodal.png
+
+# python / notebooks
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
